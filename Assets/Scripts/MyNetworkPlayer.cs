@@ -7,14 +7,15 @@ public class MyNetworkPlayer : NetworkBehaviour
     [SerializeField] private TMP_Text displayNameText = null;
     [SerializeField] private Renderer displayColorRenderer = null;
 
-    //[SerializeField] private GameObject myTarget = null;
+    [SerializeField] private GameObject myTarget = null;
     
     [SyncVar(hook=nameof(HandleDisplayNameUpdated))]
     [SerializeField]
     private string displayName = "MissingName";
 
     [SyncVar(hook=nameof(HandleTargetUpdated))]
-    private GameObject target = null;
+    [SerializeField]
+    private string target;
 
     [SyncVar(hook=nameof(HandlePositionUpdated))]
     private Vector3 position;
@@ -32,7 +33,7 @@ public class MyNetworkPlayer : NetworkBehaviour
     }
 
     [Server]
-    public void SetTarget(GameObject newTarget)
+    public void SetTarget(string newTarget)
     {
         target = newTarget;
     }
@@ -45,9 +46,9 @@ public class MyNetworkPlayer : NetworkBehaviour
 
     [Server]
     public void SetDisplayColor(Color newDisplayColor)
-        {
-            displayColor = newDisplayColor;
-        }
+    {
+        displayColor = newDisplayColor;
+    }
 
     [Command]
     public void CmdSetTarget(Vector3 newPosition)
@@ -83,7 +84,7 @@ public class MyNetworkPlayer : NetworkBehaviour
 
     private void HandleDisplayColorUpdated(Color oldColor, Color newColor)
     {
-        displayColorRenderer.material.SetColor("_Color", newColor);
+        displayColorRenderer.material.color = newColor;
     }
 
     private void HandleDisplayNameUpdated(string oldName, string newName)
@@ -91,10 +92,10 @@ public class MyNetworkPlayer : NetworkBehaviour
         displayNameText.text = newName; 
     }
 
-    private void HandleTargetUpdated(GameObject oldTarget, GameObject newTarget)
+    private void HandleTargetUpdated(string oldTarget, string newTarget)
     {
-        target.transform.position = gameObject.transform.position;
-        gameObject.GetComponent<AutoMove>().target = newTarget;   
+        GameObject.Find(newTarget).transform.position = gameObject.transform.position;
+        gameObject.GetComponent<AutoMove>().target = GameObject.Find(newTarget);   
     }
 
     private void HandlePositionUpdated(Vector3 oldPostion, Vector3 newPosition)

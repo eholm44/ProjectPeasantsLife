@@ -27,11 +27,12 @@ public class MyNetworkManager : NetworkManager
 
         GameObject target = GetTarget();
 
-        player.SetTarget(target);
+        player.SetTarget(target.name);
     }
 
     private GameObject GetTarget()
     {
+        
         foreach (GameObject t in targets)
         {
             if (t.name == $"Target {numPlayers}")

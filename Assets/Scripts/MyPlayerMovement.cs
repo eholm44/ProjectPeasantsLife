@@ -4,8 +4,6 @@ using UnityEngine.AI;
 
 public class MyPlayerMovement : NetworkBehaviour
 {
-    [SerializeField] private GameObject[] targets = null;
-
     private Camera mainCamera;
 
 #region Server
