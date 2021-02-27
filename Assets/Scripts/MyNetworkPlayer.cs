@@ -6,19 +6,10 @@ public class MyNetworkPlayer : NetworkBehaviour
 {
     [SerializeField] private TMP_Text displayNameText = null;
     [SerializeField] private Renderer displayColorRenderer = null;
-
-    [SerializeField] private GameObject myTarget = null;
     
     [SyncVar(hook=nameof(HandleDisplayNameUpdated))]
     [SerializeField]
     private string displayName = "MissingName";
-
-    [SyncVar(hook=nameof(HandleTargetUpdated))]
-    [SerializeField]
-    private string target;
-
-    [SyncVar(hook=nameof(HandlePositionUpdated))]
-    private Vector3 position;
 
     [SyncVar(hook=nameof(HandleDisplayColorUpdated))]
     [SerializeField]
@@ -33,27 +24,9 @@ public class MyNetworkPlayer : NetworkBehaviour
     }
 
     [Server]
-    public void SetTarget(string newTarget)
-    {
-        target = newTarget;
-    }
-
-    [Server]
-    public void SetPosition(Vector3 newPosition)
-    {
-        position = newPosition;
-    }
-
-    [Server]
     public void SetDisplayColor(Color newDisplayColor)
     {
         displayColor = newDisplayColor;
-    }
-
-    [Command]
-    public void CmdSetTarget(Vector3 newPosition)
-    {
-        SetPosition(newPosition);
     }
 
     [Command]
@@ -90,18 +63,6 @@ public class MyNetworkPlayer : NetworkBehaviour
     private void HandleDisplayNameUpdated(string oldName, string newName)
     {
         displayNameText.text = newName; 
-    }
-
-    private void HandleTargetUpdated(string oldTarget, string newTarget)
-    {
-        GameObject.Find(newTarget).transform.position = gameObject.transform.position;
-        gameObject.GetComponent<AutoMove>().target = GameObject.Find(newTarget);   
-    }
-
-    private void HandlePositionUpdated(Vector3 oldPostion, Vector3 newPosition)
-    {
-        Debug.Log(gameObject.GetComponent<AutoMove>().target);
-        gameObject.GetComponent<AutoMove>().target.transform.position = newPosition;   
     }
 
     [ContextMenu("Set My Name")]

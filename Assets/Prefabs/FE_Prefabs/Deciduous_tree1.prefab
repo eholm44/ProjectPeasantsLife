@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 2795318547080567644}
   - component: {fileID: 2795318547081664924}
   - component: {fileID: 6945451009273880201}
+  - component: {fileID: 8318043826935045826}
   m_Layer: 0
   m_Name: Deciduous_tree1
   m_TagString: Untagged
@@ -97,3 +98,19 @@ CapsuleCollider:
   m_Height: 6.5
   m_Direction: 1
   m_Center: {x: 0.19, y: 1.53, z: 0.15}
+--- !u!208 &8318043826935045826
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2795318547083921244}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 0
+  m_Extents: {x: 2, y: 4, z: 2}
+  m_MoveThreshold: 0.1
+  m_Carve: 1
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0, y: 3, z: 0}
+  m_TimeToStationary: 0.5

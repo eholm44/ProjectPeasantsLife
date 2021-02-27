@@ -18,6 +18,7 @@ public class MyNetworkManager : NetworkManager
         base.OnServerAddPlayer(conn);
 
         MyNetworkPlayer player = conn.identity.GetComponent<MyNetworkPlayer>();
+        MyPlayerMovement movement = conn.identity.GetComponent<MyPlayerMovement>();
 
         player.SetDisplayName($"Player {numPlayers}");
 
@@ -27,7 +28,7 @@ public class MyNetworkManager : NetworkManager
 
         GameObject target = GetTarget();
 
-        player.SetTarget(target.name);
+        movement.SetTarget(target.name);
     }
 
     private GameObject GetTarget()
