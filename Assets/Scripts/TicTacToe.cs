@@ -10,14 +10,8 @@ public class TicTacToe : MiniGame
         numPlayers = 0;
         maxPlayers =2;
 
-        players = new GameObject[maxPlayers];
+        players = new string[maxPlayers];
         
-    }
-
-    // Update is called once per frame
-    public override void Update()
-    {
-        base.Update();
-        
+        gameName = gameObject.name;
     }
 }

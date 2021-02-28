@@ -13,12 +13,21 @@ public class MyPlayerMovement : NetworkBehaviour
     [SyncVar(hook=nameof(HandlePositionUpdated))]
     private Vector3 position;
 
+    [SyncVar(hook=nameof(HandleDistanceUpdated))]
+    private float distance;
+
 #region Server
 
     [Command]
-    public void CmdSetTarget(Vector3 newPosition)
+    public void CmdSetPosition(Vector3 newPosition)
     {
         SetPosition(newPosition);
+    }
+
+    [Command]
+    public void CmdJoinGame(GameObject miniGame, string newPlayer)
+    {
+        miniGame.GetComponent<MiniGame>().JoinGame(newPlayer);
     }
 
     [Server]
@@ -31,6 +40,12 @@ public class MyPlayerMovement : NetworkBehaviour
     public void SetTarget(string newTarget)
     {
         target = newTarget;
+    }
+
+    [Command]
+    public void CmdSetDistance(float newDistance)
+    {
+        distance = newDistance;
     }
 
 #endregion
@@ -75,14 +90,21 @@ public class MyPlayerMovement : NetworkBehaviour
         NavMeshAgent nav = gameObject.GetComponent<NavMeshAgent>();
         if (hit.collider.CompareTag("MiniGame"))
         {
-            nav.stoppingDistance = 2f;
+            //Test if player close enough to join game
+            if(Vector3.Distance(gameObject.transform.position,hit.transform.position) > 5f)
+            {
+                return;
+            }
+            CmdJoinGame(hit.collider.gameObject, GetComponent<MyNetworkPlayer>().displayName);
+            CmdSetDistance(2f);
         }
-        else{
-            nav.stoppingDistance = .2f;
+        else
+        {
+            CmdSetDistance(.2f);
         }
         
         //Send players move target to server
-        CmdSetTarget(hit.point);
+        CmdSetPosition(hit.point);
         } 
     }
 
@@ -94,8 +116,13 @@ public class MyPlayerMovement : NetworkBehaviour
 
     private void HandlePositionUpdated(Vector3 oldPostion, Vector3 newPosition)
     {
-        Debug.Log(gameObject.GetComponent<AutoMove>().target);
         gameObject.GetComponent<AutoMove>().target.transform.position = newPosition;   
+    }
+
+    private void HandleDistanceUpdated(float oldDistance, float newDistance)
+    {
+        NavMeshAgent nav = gameObject.GetComponent<NavMeshAgent>();
+        nav.stoppingDistance = newDistance;  
     }
 
 #endregion

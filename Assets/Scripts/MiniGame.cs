@@ -1,47 +1,55 @@
 using TMPro;
 using UnityEngine;
+using Mirror;
 
-public class MiniGame : MonoBehaviour
+public class MiniGame : NetworkBehaviour
 {
     public int numPlayers;
     public int maxPlayers;
-    public GameObject[] players;
+    public string[] players;
+
+    public string gameName;
 
     private Camera mainCamera;
     
-    
-    void Start()
-    {
-        
-    }
+    #region Server
 
-    // Update is called once per frame
-    virtual public void Update()
+    [Server]
+    public void JoinGame(string newPlayer)
     {
-        mainCamera = Camera.main;
-        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out RaycastHit hit) && Input.GetMouseButtonDown(0))
+        //Test if already in the game
+        foreach(string p in players)
         {
-            JoinGame(mainCamera.GetComponent<CameraController>().target.gameObject.transform.parent.gameObject);
-        }
-    }
-
-    public void JoinGame(GameObject player)
-    {
-        foreach(GameObject p in players)
-        {
-            //TODO: fix for mutliplayer
-            if (p != null && p.Equals(player))
+            if (p != null && p.Equals(newPlayer))
             {
                 return;
             }
         }
+        //Test if game is full
         if (numPlayers == maxPlayers)
         {
             return;
         }
-
-        players[numPlayers] = player;
+        //Add player to game and increase number of players
+        players[numPlayers] = newPlayer;
         numPlayers++;
+        
+        RpcJoinGame(players);
     }
+
+#endregion
+#region Client
+    //Update local side player array
+    private void HandlePlayersUpdated(string[] oldPlayers, string[] newPlayers)
+    {
+        players = newPlayers;  
+    }
+    //Update other clients arrays
+    [ClientRpc]
+    private void RpcJoinGame(string[] newPlayers)
+    {
+        players = newPlayers;
+    }
+
+#endregion
 }
