@@ -16,6 +16,10 @@ public class MyPlayerMovement : NetworkBehaviour
     [SyncVar(hook=nameof(HandleDistanceUpdated))]
     private float distance;
 
+    public bool canMove = true;
+
+    public LocalPlayerManager playerManager = null;
+
 #region Server
 
     [Command]
@@ -25,9 +29,32 @@ public class MyPlayerMovement : NetworkBehaviour
     }
 
     [Command]
-    public void CmdJoinGame(GameObject miniGame, string newPlayer)
+    public void CmdJoinGame(MiniGame miniGame, string newPlayer)
     {
-        miniGame.GetComponent<MiniGame>().JoinGame(newPlayer);
+        string[] players = miniGame.players;
+        //Test if already in the game
+        foreach(string p in players)
+        {
+            if (p != null && p.Equals(newPlayer))
+            {
+                return;
+            }
+        }
+        //Test if game is full
+        if (miniGame.numPlayers == miniGame.maxPlayers)
+        {
+            return;
+        }
+        playerManager.currentMinigame = miniGame.gameObject;
+
+        miniGame.JoinGame(newPlayer);
+
+        
+        miniGame.gameCamera.SetActive(true);
+        mainCamera.gameObject.SetActive(false);
+        miniGame.leaveButton.SetActive(true);
+        
+        canMove = false;
     }
 
     [Server]
@@ -55,8 +82,11 @@ public class MyPlayerMovement : NetworkBehaviour
     public override void OnStartAuthority()
     {
         base.OnStartAuthority();
+        canMove = true;
 
         mainCamera = Camera.main;
+
+        playerManager = GameObject.Find("PlayerManager").GetComponent<LocalPlayerManager>();
 
         //Create point on character for camera to center on
         GameObject child = new GameObject();
@@ -70,6 +100,10 @@ public class MyPlayerMovement : NetworkBehaviour
     [ClientCallback]
     private void Update()
     {
+        if(!canMove)
+        {
+            return;
+        }
         //Only act for clients player
         if(!hasAuthority)
         {
@@ -95,7 +129,7 @@ public class MyPlayerMovement : NetworkBehaviour
             {
                 return;
             }
-            CmdJoinGame(hit.collider.gameObject, GetComponent<MyNetworkPlayer>().displayName);
+            CmdJoinGame(hit.collider.gameObject.GetComponent<MiniGame>(), GetComponent<MyNetworkPlayer>().displayName);
             CmdSetDistance(2f);
         }
         else

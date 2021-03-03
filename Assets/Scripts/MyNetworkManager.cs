@@ -9,7 +9,6 @@ public class MyNetworkManager : NetworkManager
     {
         base.OnClientConnect(conn);
 
-
         Debug.Log("I Connected To A Server!");
     }
 

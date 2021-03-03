@@ -4,6 +4,12 @@ using UnityEngine;
 
 public class TicTacToe : MiniGame
 {
+    [SerializeField]
+    private GameObject x;
+    
+    [SerializeField]
+    private GameObject o;
+
     // Start is called before the first frame update
     void Start()
     {

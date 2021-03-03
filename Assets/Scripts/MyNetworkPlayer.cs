@@ -14,6 +14,8 @@ public class MyNetworkPlayer : NetworkBehaviour
     [SerializeField]
     private Color displayColor = Color.black;
 
+    private GameObject playerManager = null;
+
 #region Server
 
     [Server]
@@ -48,6 +50,22 @@ public class MyNetworkPlayer : NetworkBehaviour
         RpcLogNewName(newDisplayName);
 
         SetDisplayName(newDisplayName);
+    }
+
+    [Command]
+    public void CmdLeavegame()
+    {
+        Debug.Log("Here1");
+        MiniGame miniGame = playerManager.GetComponent<LocalPlayerManager>().currentMinigame.GetComponent<MiniGame>();
+        Debug.Log("Here2");
+        miniGame.LeaveGame(displayName);
+        Debug.Log("Here3");
+        gameObject.GetComponent<MyPlayerMovement>().canMove = true;
+
+        
+        miniGame.mainCamera.gameObject.SetActive(true);
+        miniGame.gameCamera.SetActive(false);
+        miniGame.leaveButton.SetActive(false);
     }  
 
 #endregion
@@ -74,6 +92,12 @@ public class MyNetworkPlayer : NetworkBehaviour
     private void RpcLogNewName(string newDisplayName)
     {
         Debug.Log(newDisplayName);
+    }
+
+    public override void OnStartClient()
+    {
+        playerManager = GameObject.Find("PlayerManager");
+        playerManager.GetComponent<LocalPlayerManager>().localPlayer = gameObject;
     }
 
 #endregion
