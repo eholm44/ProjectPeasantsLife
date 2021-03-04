@@ -1,9 +1,11 @@
 using UnityEngine;
 using Mirror;
 using TMPro;
+using System.Collections.Generic;
 
 public class MyNetworkPlayer : NetworkBehaviour
 {
+    
     [SerializeField] private TMP_Text displayNameText = null;
     [SerializeField] private Renderer displayColorRenderer = null;
     
@@ -14,7 +16,10 @@ public class MyNetworkPlayer : NetworkBehaviour
     [SerializeField]
     private Color displayColor = Color.black;
 
-    private GameObject playerManager = null;
+    [SyncVar(hook=nameof(HandleMiniGameUpdated))]
+    [SerializeField]
+    public MiniGame miniGame;
+    private Camera mainCamera = null;
 
 #region Server
 
@@ -47,30 +52,35 @@ public class MyNetworkPlayer : NetworkBehaviour
                 return;
             }
         }
-        RpcLogNewName(newDisplayName);
 
         SetDisplayName(newDisplayName);
     }
 
     [Command]
-    public void CmdLeavegame()
+    public void CmdLeavegame(GameObject localPlayer)
     {
-        Debug.Log("Here1");
-        MiniGame miniGame = playerManager.GetComponent<LocalPlayerManager>().currentMinigame.GetComponent<MiniGame>();
-        Debug.Log("Here2");
-        miniGame.LeaveGame(displayName);
-        Debug.Log("Here3");
-        gameObject.GetComponent<MyPlayerMovement>().canMove = true;
-
-        
-        miniGame.mainCamera.gameObject.SetActive(true);
-        miniGame.gameCamera.SetActive(false);
-        miniGame.leaveButton.SetActive(false);
+        miniGame.LeaveGame(localPlayer);   
     }  
 
 #endregion
 
 #region Client
+
+    public void LeaveGame(GameObject localPlayer)
+    {
+        
+        CmdLeavegame(localPlayer);
+        //TODO ERROR HERE
+         if (isLocalPlayer)
+        {
+            mainCamera.gameObject.SetActive(true);
+            miniGame.gameCamera.SetActive(false);
+            miniGame.leaveButton.SetActive(false);
+        }
+        miniGame = null;
+        
+        RpcUpdateMiniGame(miniGame);
+    }
 
     private void HandleDisplayColorUpdated(Color oldColor, Color newColor)
     {
@@ -82,23 +92,33 @@ public class MyNetworkPlayer : NetworkBehaviour
         displayNameText.text = newName; 
     }
 
+    private void HandleMiniGameUpdated(MiniGame oldMiniGame, MiniGame newMiniGame)
+    {
+        miniGame = newMiniGame; 
+    }
+
     [ContextMenu("Set My Name")]
     private void SetMyName()
     {
         CmdSetDisplayName("");
     }
 
-    [ClientRpc]
-    private void RpcLogNewName(string newDisplayName)
-    {
-        Debug.Log(newDisplayName);
-    }
-
     public override void OnStartClient()
     {
-        playerManager = GameObject.Find("PlayerManager");
-        playerManager.GetComponent<LocalPlayerManager>().localPlayer = gameObject;
+        if (isLocalPlayer)
+        {
+            GameObject.Find("UIManager").GetComponent<UIManager>().localPlayer = gameObject;
+        }
+        mainCamera = Camera.main;
     }
+
+    [ClientRpc]
+    public void RpcUpdateMiniGame(MiniGame newMiniGame)
+    {
+        miniGame = newMiniGame;
+    }
+
+    
 
 #endregion
 }

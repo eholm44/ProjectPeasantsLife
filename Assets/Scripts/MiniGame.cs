@@ -1,6 +1,7 @@
-using TMPro;
 using UnityEngine;
 using Mirror;
+using System;
+using TMPro;
 
 public class MiniGame : NetworkBehaviour
 {
@@ -15,34 +16,45 @@ public class MiniGame : NetworkBehaviour
     public GameObject gameCamera;
 
     public GameObject leaveButton;
-    
+
     #region Server
 
     [Server]
     public void JoinGame(string newPlayer)
     {
+        //Test if game is full
+        if (numPlayers == maxPlayers)
+        {
+            return;
+        }
+        foreach(string p in players)
+        {
+            if (p != null && p.Equals(newPlayer))
+            {
+                return;
+            }
+        }
         //Add player to game and increase number of players
         players[numPlayers] = newPlayer;
         numPlayers++;
         
-        RpcJoinGame(players);
+        RpcUpdateGame(players);
     }
 
     [Server]
-    public void LeaveGame(string leavePlayer)
+    public void LeaveGame(GameObject leavePlayer)
     {
-        Debug.Log("Here");
         //Remove player from game
         for (int i = 0; i < maxPlayers; i++)
         {
-            if (players[i] != null && players[i] == leavePlayer)
+            if (players[i] != null && players[i] == leavePlayer.GetComponentInChildren<TMP_Text>().text)
             {
                 players[i] = null;
             }
         }
         numPlayers--;
 
-        RpcLeaveGame(players);
+        RpcUpdateGame(players);
     }
 
 #endregion
@@ -54,23 +66,9 @@ public class MiniGame : NetworkBehaviour
     }
     //Update other clients arrays
     [ClientRpc]
-    private void RpcJoinGame(string[] newPlayers)
+    private void RpcUpdateGame(string[] newPlayers)
     {
         players = newPlayers;
-    }
-    [ClientRpc]
-    private void RpcLeaveGame(string[] newPlayers)
-    {
-        players = newPlayers;
-    }
-
-    public override void OnStartClient()
-    {
-        base.OnStartClient();
-
-        mainCamera = Camera.main;
-        mainCamera.gameObject.SetActive(true);
-        gameCamera.SetActive(false);
     }
 
 #endregion

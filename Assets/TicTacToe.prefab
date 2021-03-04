@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5762087558253616437}
   - component: {fileID: 6645858309940027887}
   - component: {fileID: 5650843611340658186}
+  - component: {fileID: 5948378278257483692}
   m_Layer: 0
   m_Name: Game Camera
   m_TagString: Untagged
@@ -107,6 +108,14 @@ MonoBehaviour:
   m_RequiresDepthTexture: 0
   m_RequiresColorTexture: 0
   m_Version: 2
+--- !u!81 &5948378278257483692
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3770169567915258617}
+  m_Enabled: 1
 --- !u!1 &6635406475163908795
 GameObject:
   m_ObjectHideFlags: 0
@@ -1036,6 +1045,7 @@ MonoBehaviour:
   maxPlayers: 2
   players: []
   gameName: 
+  mainCamera: {fileID: 0}
   gameCamera: {fileID: 3770169567915258617}
   leaveButton: {fileID: 0}
   x: {fileID: 3079823607166181686, guid: 4825e16fbfe5e6f4fbc2e67519aa4720, type: 3}

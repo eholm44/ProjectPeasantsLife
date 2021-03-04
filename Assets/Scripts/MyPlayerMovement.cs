@@ -18,8 +18,6 @@ public class MyPlayerMovement : NetworkBehaviour
 
     public bool canMove = true;
 
-    public LocalPlayerManager playerManager = null;
-
 #region Server
 
     [Command]
@@ -31,30 +29,7 @@ public class MyPlayerMovement : NetworkBehaviour
     [Command]
     public void CmdJoinGame(MiniGame miniGame, string newPlayer)
     {
-        string[] players = miniGame.players;
-        //Test if already in the game
-        foreach(string p in players)
-        {
-            if (p != null && p.Equals(newPlayer))
-            {
-                return;
-            }
-        }
-        //Test if game is full
-        if (miniGame.numPlayers == miniGame.maxPlayers)
-        {
-            return;
-        }
-        playerManager.currentMinigame = miniGame.gameObject;
-
         miniGame.JoinGame(newPlayer);
-
-        
-        miniGame.gameCamera.SetActive(true);
-        mainCamera.gameObject.SetActive(false);
-        miniGame.leaveButton.SetActive(true);
-        
-        canMove = false;
     }
 
     [Server]
@@ -85,8 +60,6 @@ public class MyPlayerMovement : NetworkBehaviour
         canMove = true;
 
         mainCamera = Camera.main;
-
-        playerManager = GameObject.Find("PlayerManager").GetComponent<LocalPlayerManager>();
 
         //Create point on character for camera to center on
         GameObject child = new GameObject();
@@ -129,7 +102,35 @@ public class MyPlayerMovement : NetworkBehaviour
             {
                 return;
             }
-            CmdJoinGame(hit.collider.gameObject.GetComponent<MiniGame>(), GetComponent<MyNetworkPlayer>().displayName);
+            MiniGame miniGame = hit.collider.gameObject.GetComponent<MiniGame>();
+
+            //Test if can join minigame
+            string[] players = miniGame.players;
+            //Test if already in the game
+            foreach(string p in players)
+            {
+                if (p != null && p.Equals(GetComponent<MyNetworkPlayer>().displayName))
+                {
+                    return;
+                }
+            }
+
+            //Test if game is full
+            if (miniGame.numPlayers == miniGame.maxPlayers)
+            {
+                return;
+            }
+
+            CmdJoinGame(miniGame, GetComponent<MyNetworkPlayer>().displayName);
+            
+            GetComponent<MyNetworkPlayer>().RpcUpdateMiniGame(miniGame);
+
+            gameObject.GetComponent<MyNetworkPlayer>().miniGame = miniGame;
+            
+            miniGame.gameCamera.SetActive(true);
+            mainCamera.gameObject.SetActive(false);
+            miniGame.leaveButton.SetActive(true);
+            
             CmdSetDistance(2f);
         }
         else
