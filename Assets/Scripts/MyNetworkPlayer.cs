@@ -13,9 +13,6 @@ public class MyNetworkPlayer : Targetable
     [SyncVar(hook=nameof(HandleDisplayColorUpdated))]
     [SerializeField]
     private Color displayColor = Color.black;
-
-    [SerializeField]
-    private SyncDictionary<GameObject,MiniGame> playerGame = new SyncDictionary<GameObject, MiniGame>();
     private Camera mainCamera = null;
 
     
@@ -50,6 +47,12 @@ public class MyNetworkPlayer : Targetable
     public void CmdJoinGame(MiniGame miniGame, GameObject newPlayer)
     {
         miniGame.JoinGame(newPlayer);
+    }
+
+    [Command]
+    public void CmdTryPlay(MiniGame miniGame, string transformName, string playerName)
+    {
+        miniGame.AddPiece(transformName, playerName);
     }
 
 #endregion

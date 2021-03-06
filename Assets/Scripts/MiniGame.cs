@@ -5,6 +5,7 @@ using TMPro;
 
 public class MiniGame : Targetable
 {
+    public bool gameStarted;
     public int numPlayers;
     public int maxPlayers;
     public string[] players;
@@ -50,14 +51,17 @@ public class MiniGame : Targetable
         }
         numPlayers--;
 
+        ClearBoard();
+
         RpcUpdateGame(players);
     }
 
     [Server]
-    public virtual void StartGame()
-    {
-        
-    }
+    public virtual void StartGame(){}
+    public virtual GameObject GetGamePiece(){return null;}
+    public virtual void AddPiece(string transformName, string playerName){}
+
+    public virtual void ClearBoard(){}
 
 #endregion
 #region Client

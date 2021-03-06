@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Mirror;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -11,10 +12,13 @@ public class PlayerCommandGiver : MonoBehaviour
 
     private MiniGame currentGame;
 
+    private bool gameStarted;
+
     private bool canMove;
 
     private void Start()
     {
+        gameStarted = false;
         mainCamera = Camera.main;
 
         uIManager = GameObject.Find("UIManager").GetComponent<UIManager>();
@@ -23,55 +27,17 @@ public class PlayerCommandGiver : MonoBehaviour
 
     private void Update()
     {
-        if(!canMove) {return;}
-        if(Mouse.current.leftButton.wasPressedThisFrame)
+        if(currentGame != null && currentGame.numPlayers == currentGame.maxPlayers)
         {
-            Ray ray = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
-
-            //Check if clicking viable screen loacation
-            if (!Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity))
-            {
-                return;
-            }
-
-            if(hit.collider.TryGetComponent<Targetable>(out Targetable target))
-            {
-                GetComponent<MyPlayerMovement>().CmdSetDistance(2f);
-                if (hit.collider.CompareTag("MiniGame"))
-                {
-                    if(Vector3.Distance(gameObject.transform.position,hit.transform.position) > 5f)
-                    {
-                        return;
-                    }
-                    MiniGame miniGame = hit.collider.gameObject.GetComponent<MiniGame>();
-
-                    //Test if can join minigame
-                    string[] players = miniGame.players;
-                    //Test if already in the game
-                    foreach(string p in players)
-                    {
-                        if (p != null && p.Equals(GetComponent<MyNetworkPlayer>().displayName))
-                        {
-                            return;
-                        }
-                    }
-
-                    //Test if game is full
-                    if (miniGame.numPlayers == miniGame.maxPlayers)
-                    {
-                        return;
-                    }
-                    currentGame = miniGame;
-                    TryJoinGame(miniGame);
-                }
-                
-                TryTarget(target);
-                TryMove(hit.point);
-                return;
-            }
-            GetComponent<MyPlayerMovement>().CmdSetDistance(.2f);
-
-            TryMove(hit.point);
+            gameStarted = true;
+        }
+        if(!gameStarted)
+        {
+            TryClick();
+        }
+        else
+        {
+            TryGameClick();
         }
     }
 
@@ -109,5 +75,81 @@ public class PlayerCommandGiver : MonoBehaviour
 
         GetComponent<MyNetworkPlayer>().CmdLeaveGame(currentGame, gameObject);
         canMove = true;
+    }
+
+    private void TryPlay(string transformName)
+    {
+        GetComponent<MyNetworkPlayer>().CmdTryPlay(currentGame, transformName, gameObject.GetComponentInChildren<TMP_Text>().text);
+    }
+
+    private void TryGameClick()
+    {
+        if(Mouse.current.leftButton.wasPressedThisFrame)
+        {
+            RaycastHit[] hits;
+            Ray ray = currentGame.gameCamera.GetComponent<Camera>().ScreenPointToRay(Mouse.current.position.ReadValue());
+            hits = Physics.RaycastAll(currentGame.gameCamera.transform.position, ray.direction, Mathf.Infinity);
+
+            foreach(RaycastHit h in hits)
+            {
+                if(h.collider.CompareTag("GamePoint"))
+                {
+                    TryPlay(h.collider.transform.name);
+                }
+            }
+        }
+    }
+
+    private void TryClick()
+    {
+        if(Mouse.current.leftButton.wasPressedThisFrame)
+        {
+            Ray ray = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
+
+            //Check if clicking viable screen loacation
+            if (!Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity))
+            {
+                return;
+            }
+
+            if(hit.collider.TryGetComponent<Targetable>(out Targetable target))
+            {
+                
+                GetComponent<MyPlayerMovement>().CmdSetDistance(2f);
+                if (hit.collider.CompareTag("MiniGame"))
+                {
+                    MiniGame miniGame = hit.collider.gameObject.GetComponent<MiniGame>();
+
+                    //Test if can join minigame
+                    string[] players = miniGame.players;
+                    //Test if already in the game
+                    foreach(string p in players)
+                    {
+                        if (p != null && p.Equals(GetComponent<MyNetworkPlayer>().displayName))
+                        {
+                            return;
+                        }
+                    }
+
+                    //Test if game is full
+                    if (miniGame.numPlayers == miniGame.maxPlayers)
+                    {
+                        return;
+                    }
+                    currentGame = miniGame;
+                    TryJoinGame(miniGame);
+                    gameStarted = true;
+                }
+                
+                TryTarget(target);
+                if(!canMove) {return;}
+                TryMove(hit.point);
+                return;
+            }
+
+            GetComponent<MyPlayerMovement>().CmdSetDistance(.2f);
+            if(!canMove) {return;}
+            TryMove(hit.point);
+        }
     }
 }
