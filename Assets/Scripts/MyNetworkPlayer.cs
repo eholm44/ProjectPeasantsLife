@@ -1,30 +1,29 @@
 using UnityEngine;
 using Mirror;
 using TMPro;
-using System.Collections.Generic;
 
-public class MyNetworkPlayer : NetworkBehaviour
+public class MyNetworkPlayer : Targetable
 {
-    
     [SerializeField] private TMP_Text displayNameText = null;
     [SerializeField] private Renderer displayColorRenderer = null;
-    
+
     [SyncVar(hook=nameof(HandleDisplayNameUpdated))]
-    public string displayName = "MissingName";
+    public int displayName;
 
     [SyncVar(hook=nameof(HandleDisplayColorUpdated))]
     [SerializeField]
     private Color displayColor = Color.black;
 
-    [SyncVar(hook=nameof(HandleMiniGameUpdated))]
     [SerializeField]
-    public MiniGame miniGame;
+    private SyncDictionary<GameObject,MiniGame> playerGame = new SyncDictionary<GameObject, MiniGame>();
     private Camera mainCamera = null;
+
+    
 
 #region Server
 
     [Server]
-    public void SetDisplayName(string newDisplayName)
+    public void SetDisplayName(int newDisplayName)
     {
         displayName = newDisplayName;
     }
@@ -36,71 +35,35 @@ public class MyNetworkPlayer : NetworkBehaviour
     }
 
     [Command]
-    private void CmdSetDisplayName(string newDisplayName)
+    private void CmdSetDisplayName(int newDisplayName)
     {
-    // TODO if is blacklisted
-        if(newDisplayName.Length < 2 || newDisplayName.Length > 21)
-        {
-            Debug.Log("Name must be between 3 and 20 characters!");
-            return;
-        }
-        foreach( char c in newDisplayName)
-        {
-            if (!char.IsNumber(c) && !char.IsLetter(c))
-            {
-                Debug.Log("Name must only contain letters or numbers!");
-                return;
-            }
-        }
-
         SetDisplayName(newDisplayName);
     }
 
     [Command]
-    public void CmdLeavegame(GameObject localPlayer)
+    public void CmdLeaveGame(MiniGame miniGame, GameObject gamePlayer)
     {
-        miniGame.LeaveGame(localPlayer);   
+        miniGame.LeaveGame(gamePlayer);
     }  
+
+    [Command]
+    public void CmdJoinGame(MiniGame miniGame, GameObject newPlayer)
+    {
+        miniGame.JoinGame(newPlayer);
+    }
 
 #endregion
 
 #region Client
-
-    public void LeaveGame(GameObject localPlayer)
-    {
-        
-        CmdLeavegame(localPlayer);
-        //TODO ERROR HERE
-         if (isLocalPlayer)
-        {
-            mainCamera.gameObject.SetActive(true);
-            miniGame.gameCamera.SetActive(false);
-            miniGame.leaveButton.SetActive(false);
-        }
-        miniGame = null;
-        
-        RpcUpdateMiniGame(miniGame);
-    }
 
     private void HandleDisplayColorUpdated(Color oldColor, Color newColor)
     {
         displayColorRenderer.material.color = newColor;
     }
 
-    private void HandleDisplayNameUpdated(string oldName, string newName)
+    private void HandleDisplayNameUpdated(int oldName, int newName)
     {
-        displayNameText.text = newName; 
-    }
-
-    private void HandleMiniGameUpdated(MiniGame oldMiniGame, MiniGame newMiniGame)
-    {
-        miniGame = newMiniGame; 
-    }
-
-    [ContextMenu("Set My Name")]
-    private void SetMyName()
-    {
-        CmdSetDisplayName("");
+        displayNameText.text = newName.ToString(); 
     }
 
     public override void OnStartClient()
@@ -110,12 +73,6 @@ public class MyNetworkPlayer : NetworkBehaviour
             GameObject.Find("UIManager").GetComponent<UIManager>().localPlayer = gameObject;
         }
         mainCamera = Camera.main;
-    }
-
-    [ClientRpc]
-    public void RpcUpdateMiniGame(MiniGame newMiniGame)
-    {
-        miniGame = newMiniGame;
     }
 
     

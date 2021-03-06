@@ -19,7 +19,7 @@ public class MyNetworkManager : NetworkManager
         MyNetworkPlayer player = conn.identity.GetComponent<MyNetworkPlayer>();
         MyPlayerMovement movement = conn.identity.GetComponent<MyPlayerMovement>();
 
-        player.SetDisplayName($"Player {numPlayers}");
+        player.SetDisplayName(numPlayers);
 
         Color displayColor = new Color(Random.Range(0f,1f), Random.Range(0f,1f), Random.Range(0f,1f));
 

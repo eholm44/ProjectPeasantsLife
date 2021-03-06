@@ -3,7 +3,7 @@ using UnityEngine.AI;
 
 public class AutoMove : MonoBehaviour
 {
-        public GameObject target = null;
+    public GameObject target = null;
     [SerializeField] private NavMeshAgent agent = null;
     void Update()
     {

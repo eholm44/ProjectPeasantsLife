@@ -943,6 +943,7 @@ GameObject:
   - component: {fileID: 6635406476663138220}
   - component: {fileID: 6635406476663138216}
   - component: {fileID: 6635406476663138223}
+  - component: {fileID: -6148671259229640637}
   m_Layer: 0
   m_Name: TicTacToe
   m_TagString: MiniGame
@@ -1041,6 +1042,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+  aimPoint: {fileID: 6635406476663138221}
   numPlayers: 0
   maxPlayers: 2
   players: []
@@ -1079,6 +1081,21 @@ MonoBehaviour:
   serverOnly: 0
   m_AssetId: 
   hasSpawned: 0
+--- !u!114 &-6148671259229640637
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6635406476663138217}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0aad2c79e18d14f468f965906b88ec34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  aimPoint: {fileID: 6635406476663138221}
 --- !u!1 &6635406476774425076
 GameObject:
   m_ObjectHideFlags: 0

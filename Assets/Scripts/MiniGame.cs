@@ -3,7 +3,7 @@ using Mirror;
 using System;
 using TMPro;
 
-public class MiniGame : NetworkBehaviour
+public class MiniGame : Targetable
 {
     public int numPlayers;
     public int maxPlayers;
@@ -11,16 +11,12 @@ public class MiniGame : NetworkBehaviour
 
     public string gameName;
 
-    public Camera mainCamera;
-
     public GameObject gameCamera;
-
-    public GameObject leaveButton;
 
     #region Server
 
     [Server]
-    public void JoinGame(string newPlayer)
+    public void JoinGame(GameObject newPlayer)
     {
         //Test if game is full
         if (numPlayers == maxPlayers)
@@ -35,7 +31,7 @@ public class MiniGame : NetworkBehaviour
             }
         }
         //Add player to game and increase number of players
-        players[numPlayers] = newPlayer;
+        players[numPlayers] = newPlayer.GetComponentInChildren<TMP_Text>().text;
         numPlayers++;
         
         RpcUpdateGame(players);
@@ -55,6 +51,12 @@ public class MiniGame : NetworkBehaviour
         numPlayers--;
 
         RpcUpdateGame(players);
+    }
+
+    [Server]
+    public virtual void StartGame()
+    {
+        
     }
 
 #endregion

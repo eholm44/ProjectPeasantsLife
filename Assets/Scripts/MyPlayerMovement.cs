@@ -1,6 +1,7 @@
 using UnityEngine;
 using Mirror;
 using UnityEngine.AI;
+using UnityEngine.InputSystem;
 
 public class MyPlayerMovement : NetworkBehaviour
 {
@@ -16,8 +17,6 @@ public class MyPlayerMovement : NetworkBehaviour
     [SyncVar(hook=nameof(HandleDistanceUpdated))]
     private float distance;
 
-    public bool canMove = true;
-
 #region Server
 
     [Command]
@@ -27,9 +26,9 @@ public class MyPlayerMovement : NetworkBehaviour
     }
 
     [Command]
-    public void CmdJoinGame(MiniGame miniGame, string newPlayer)
+    public void CmdSetDistance(float newDistance)
     {
-        miniGame.JoinGame(newPlayer);
+        distance = newDistance;
     }
 
     [Server]
@@ -44,103 +43,15 @@ public class MyPlayerMovement : NetworkBehaviour
         target = newTarget;
     }
 
-    [Command]
-    public void CmdSetDistance(float newDistance)
-    {
-        distance = newDistance;
-    }
-
 #endregion
 
 #region Client
 
     public override void OnStartAuthority()
     {
-        base.OnStartAuthority();
-        canMove = true;
-
         mainCamera = Camera.main;
 
-        //Create point on character for camera to center on
-        GameObject child = new GameObject();
-        child.transform.parent = gameObject.transform;
-        child.transform.position = new Vector3(transform.position.x, transform.position.y + 1.15f, transform.position.z);
-
-        mainCamera.GetComponent<CameraController>().target = child.transform;
-    }
-
-
-    [ClientCallback]
-    private void Update()
-    {
-        if(!canMove)
-        {
-            return;
-        }
-        //Only act for clients player
-        if(!hasAuthority)
-        {
-            return;
-        }
-        
-        //Is left mouse button clicked TODO: change to new input system
-        if(Input.GetMouseButton(0))
-        {
-            Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-        //Check if clicking viable screen loacation
-        if (!Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity))
-        {
-            return;
-        }
-
-        //Adjust stopping distance based on what is clicked
-        NavMeshAgent nav = gameObject.GetComponent<NavMeshAgent>();
-        if (hit.collider.CompareTag("MiniGame"))
-        {
-            //Test if player close enough to join game
-            if(Vector3.Distance(gameObject.transform.position,hit.transform.position) > 5f)
-            {
-                return;
-            }
-            MiniGame miniGame = hit.collider.gameObject.GetComponent<MiniGame>();
-
-            //Test if can join minigame
-            string[] players = miniGame.players;
-            //Test if already in the game
-            foreach(string p in players)
-            {
-                if (p != null && p.Equals(GetComponent<MyNetworkPlayer>().displayName))
-                {
-                    return;
-                }
-            }
-
-            //Test if game is full
-            if (miniGame.numPlayers == miniGame.maxPlayers)
-            {
-                return;
-            }
-
-            CmdJoinGame(miniGame, GetComponent<MyNetworkPlayer>().displayName);
-            
-            GetComponent<MyNetworkPlayer>().RpcUpdateMiniGame(miniGame);
-
-            gameObject.GetComponent<MyNetworkPlayer>().miniGame = miniGame;
-            
-            miniGame.gameCamera.SetActive(true);
-            mainCamera.gameObject.SetActive(false);
-            miniGame.leaveButton.SetActive(true);
-            
-            CmdSetDistance(2f);
-        }
-        else
-        {
-            CmdSetDistance(.2f);
-        }
-        
-        //Send players move target to server
-        CmdSetPosition(hit.point);
-        } 
+        mainCamera.GetComponent<CameraController>().target = GetComponent<Targetable>().GetAimPoint();
     }
 
     private void HandleTargetUpdated(string oldTarget, string newTarget)

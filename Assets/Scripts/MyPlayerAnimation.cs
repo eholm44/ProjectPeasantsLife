@@ -5,8 +5,6 @@ using UnityEngine.AI;
 public class MyPlayerAnimation : NetworkBehaviour
 {
     private Vector3 previousPosition;
-    public float curSpeed;
-    // Update is called once per frame
 
     private Animator animator;
 
@@ -16,14 +14,14 @@ public class MyPlayerAnimation : NetworkBehaviour
     }
     void Update()
     {
-        Vector3 curMove = transform.position - previousPosition;
-        curSpeed = curMove.magnitude / Time.deltaTime;
-        previousPosition = transform.position;
+        Vector3 velocity = GetComponent<NavMeshAgent>().velocity;
+        Vector3 localVelocity = transform.InverseTransformDirection(velocity);
 
-        float xspeed = curMove.x;
-        float zspeed = curSpeed;
-        //GetComponentInChildren<Animator>().SetFloat("xSpeed", xspeed);
-        animator.SetFloat("zSpeed", curSpeed);
+        float xSpeed = localVelocity.x;
+        float zSpeed = localVelocity.z;
+
+        animator.SetFloat("zSpeed", zSpeed);
+        animator.SetFloat("xSpeed", xSpeed);
         
     }
 }

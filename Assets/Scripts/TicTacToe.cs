@@ -9,6 +9,24 @@ public class TicTacToe : MiniGame
     
     [SerializeField]
     private GameObject o;
+    [SerializeField]
+    private Transform oneOne;
+    [SerializeField]
+    private Transform oneTwo;
+    [SerializeField]
+    private Transform oneThree;
+    [SerializeField]
+    private Transform twoOne;
+    [SerializeField]
+    private Transform twoTwo;
+    [SerializeField]
+    private Transform twoThree;
+    [SerializeField]
+    private Transform threeOne;
+    [SerializeField]
+    private Transform threeTwo;
+    [SerializeField]
+    private Transform threeThree;
 
     // Start is called before the first frame update
     void Start()
@@ -19,5 +37,12 @@ public class TicTacToe : MiniGame
         players = new string[maxPlayers];
         
         gameName = gameObject.name;
+    }
+
+    public override void StartGame()
+    {
+        base.StartGame();
+
+        
     }
 }
