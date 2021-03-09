@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerCommandGiver : MonoBehaviour
+public class PlayerCommandGiver : NetworkBehaviour
 {
     private Camera mainCamera;
     [SerializeField] private UIManager uIManager = null;
@@ -48,16 +48,20 @@ public class PlayerCommandGiver : MonoBehaviour
 
     public void TryMove(Vector3 point)
     {
+        
+        if(!canMove) {return;}
         GetComponent<MyPlayerMovement>().CmdSetPosition(point);
     }
 
     private void TryTarget(Targetable target)
     {
+        if(!hasAuthority){return;}
         GetComponent<Targeter>().CmdSetTarget(target.gameObject);
     }
 
     private void TryJoinGame(MiniGame miniGame)
     {
+        if(!hasAuthority){return;}
         canMove = false;
         miniGame.gameCamera.SetActive(true);
         mainCamera.gameObject.SetActive(false);
@@ -68,13 +72,14 @@ public class PlayerCommandGiver : MonoBehaviour
 
     public void TryLeaveGame()
     {
+        if(!hasAuthority){return;}
         GetComponent<Targeter>().ClearTarget();
         currentGame.gameCamera.SetActive(false);
         mainCamera.gameObject.SetActive(true);
         uIManager.DeactivateLeave();
-
         GetComponent<MyNetworkPlayer>().CmdLeaveGame(currentGame, gameObject);
         canMove = true;
+        gameStarted = false;
     }
 
     private void TryPlay(string transformName)
@@ -94,6 +99,7 @@ public class PlayerCommandGiver : MonoBehaviour
             {
                 if(h.collider.CompareTag("GamePoint"))
                 {
+                    if(!hasAuthority){return;}
                     TryPlay(h.collider.transform.name);
                 }
             }
@@ -102,6 +108,7 @@ public class PlayerCommandGiver : MonoBehaviour
 
     private void TryClick()
     {
+        if(!hasAuthority){return;}
         if(Mouse.current.leftButton.wasPressedThisFrame)
         {
             Ray ray = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
@@ -114,7 +121,6 @@ public class PlayerCommandGiver : MonoBehaviour
 
             if(hit.collider.TryGetComponent<Targetable>(out Targetable target))
             {
-                
                 GetComponent<MyPlayerMovement>().CmdSetDistance(2f);
                 if (hit.collider.CompareTag("MiniGame"))
                 {
@@ -142,13 +148,10 @@ public class PlayerCommandGiver : MonoBehaviour
                 }
                 
                 TryTarget(target);
-                if(!canMove) {return;}
                 TryMove(hit.point);
                 return;
             }
-
             GetComponent<MyPlayerMovement>().CmdSetDistance(.2f);
-            if(!canMove) {return;}
             TryMove(hit.point);
         }
     }

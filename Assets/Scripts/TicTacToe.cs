@@ -32,6 +32,7 @@ public class TicTacToe : MiniGame
     private Transform threeThree;
 
     private SyncDictionary<Transform, bool> myDict = new SyncDictionary<Transform, bool>();
+    private SyncList<GameObject> spawnedPieces = new SyncList<GameObject>();
 
     [Server]
     public override void AddPiece(string transformName, string playerName)
@@ -42,19 +43,18 @@ public class TicTacToe : MiniGame
             return;
         }
         Transform transformHit = FindTransform(transformName);
-        //Get game piece to place
-        GameObject gamePiece = GetGamePiece();
         if(transformHit == null)
         {
             return;
         }
+        //Get game piece to place
+        GameObject gamePiece = GetGamePiece();
         //Place game piece on board
         GameObject xInstance = Instantiate(gamePiece, transformHit.position, transformHit.rotation);
-        xInstance.transform.SetParent(gameObject.transform);
+        spawnedPieces.Add(xInstance);
         NetworkServer.Spawn(xInstance);
     }
 
-    [Server]
     private Transform FindTransform(string transformName)
     {
         //Why does this work!?!
@@ -67,6 +67,7 @@ public class TicTacToe : MiniGame
                 {
                     return null;
                 }
+
                 myDict[key] = true;
                 return key;
             }
@@ -93,12 +94,9 @@ public class TicTacToe : MiniGame
     [Server]
     public override void ClearBoard()
     {
-        foreach(Transform child in gameObject.transform)
+        foreach(GameObject piece in spawnedPieces)
         {
-            if(child.name.Contains("X") || child.name.Contains("O"))
-            {
-                GameObject.Destroy(child.gameObject);
-            }
+            GameObject.Destroy(piece);
         }
 
         myDict[oneOne] = false;
@@ -114,6 +112,7 @@ public class TicTacToe : MiniGame
         playerTurn = 0;
     }
 
+    [Server]
     public override void OnStartServer()
     {
         base.OnStartServer();
@@ -136,13 +135,6 @@ public class TicTacToe : MiniGame
         gameName = gameObject.name;
 
         playerTurn = 0;
-    }
-
-    public override void StartGame()
-    {
-        base.StartGame();
-
-        gameStarted = true;
     }
 
     
