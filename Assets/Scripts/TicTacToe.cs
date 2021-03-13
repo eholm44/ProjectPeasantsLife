@@ -31,8 +31,9 @@ public class TicTacToe : MiniGame
     [SerializeField]
     private Transform threeThree;
 
-    private SyncDictionary<Transform, bool> myDict = new SyncDictionary<Transform, bool>();
-    private SyncList<GameObject> spawnedPieces = new SyncList<GameObject>();
+    private SyncDictionary<Transform, GameObject> myDict = new SyncDictionary<Transform, GameObject>();
+
+    private GameObject[] boardMatrix = new GameObject[9]{null,null,null,null,null,null,null,null,null};
 
     [Server]
     public override void AddPiece(string transformName, string playerName)
@@ -51,8 +52,61 @@ public class TicTacToe : MiniGame
         GameObject gamePiece = GetGamePiece();
         //Place game piece on board
         GameObject xInstance = Instantiate(gamePiece, transformHit.position, transformHit.rotation);
-        spawnedPieces.Add(xInstance);
+
+        if (transformHit == oneOne)
+        {
+            boardMatrix[0] = xInstance;
+        }
+        else if (transformHit == oneTwo)
+        {
+            boardMatrix[1] = xInstance;
+        }
+        else if (transformHit == oneThree)
+        {
+            boardMatrix[2] = xInstance;
+        }
+        else if (transformHit == twoOne)
+        {
+            boardMatrix[3] = xInstance;
+        }
+        else if (transformHit == twoTwo)
+        {
+            boardMatrix[4] = xInstance;
+        }
+        else if (transformHit == twoThree)
+        {
+            boardMatrix[5] = xInstance;
+        }else if (transformHit == threeOne)
+        {
+            boardMatrix[6] = xInstance;
+        }
+        else if (transformHit == threeTwo)
+        {
+            boardMatrix[7] = xInstance;
+        }
+        else if (transformHit == threeThree)
+        {
+            boardMatrix[8] = xInstance;
+        }
+
+        //for (int i = 0; i < 3; i++)
+        //{
+        //    for (int j = 0; j < 3; j++)
+        //    {
+        //        Debug.Log(i + ", " + j + ": " + boardMatrix[i,j]);
+        //    }
+        //}
+
         NetworkServer.Spawn(xInstance);
+
+        if (CheckForWin() == 1)
+        {
+            Debug.Log("Win");
+        }
+        else
+        {
+            Debug.Log("No Win");
+        }
     }
 
     private Transform FindTransform(string transformName)
@@ -63,12 +117,10 @@ public class TicTacToe : MiniGame
             if (key.name == transformName)
             {
                 //game space taken
-                if(myDict[key] == true)
+                if(myDict[key] != null)
                 {
                     return null;
                 }
-
-                myDict[key] = true;
                 return key;
             }
         }
@@ -94,20 +146,10 @@ public class TicTacToe : MiniGame
     [Server]
     public override void ClearBoard()
     {
-        foreach(GameObject piece in spawnedPieces)
+        foreach(GameObject piece in myDict.Values)
         {
             GameObject.Destroy(piece);
         }
-
-        myDict[oneOne] = false;
-        myDict[oneTwo] = false;
-        myDict[oneThree] = false;
-        myDict[twoOne] = false;
-        myDict[twoTwo] = false;
-        myDict[twoThree] = false;
-        myDict[threeOne] = false;
-        myDict[threeTwo] = false;
-        myDict[threeThree] = false;
 
         playerTurn = 0;
     }
@@ -117,15 +159,15 @@ public class TicTacToe : MiniGame
     {
         base.OnStartServer();
 
-        myDict.Add(oneOne, false);
-        myDict.Add(oneTwo, false);
-        myDict.Add(oneThree, false);
-        myDict.Add(twoOne, false);
-        myDict.Add(twoTwo, false);
-        myDict.Add(twoThree, false);
-        myDict.Add(threeOne, false);
-        myDict.Add(threeTwo, false);
-        myDict.Add(threeThree, false);
+        myDict.Add(oneOne, null);
+        myDict.Add(oneTwo, null);
+        myDict.Add(oneThree, null);
+        myDict.Add(twoOne, null);
+        myDict.Add(twoTwo, null);
+        myDict.Add(twoThree, null);
+        myDict.Add(threeOne, null);
+        myDict.Add(threeTwo, null);
+        myDict.Add(threeThree, null);
 
         numPlayers = 0;
         maxPlayers =2;
@@ -137,7 +179,53 @@ public class TicTacToe : MiniGame
         playerTurn = 0;
     }
 
-    
+    [Server]
+    private int CheckForWin()
+    {
+        if (GetName(0) == GetName(1) && GetName(1) == GetName(2) && GetName(0) != "bad")
+        {
+            return 1;
+        }
+        else if (GetName(3) == GetName(4) && GetName(4) == GetName(5) && GetName(3) != "bad")
+        {
+            return 1;
+        }
+        else if (GetName(6) == GetName(7) && GetName(7) == GetName(8) && GetName(6) != "bad")
+        {
+            return 1;
+        }
+        else if (GetName(0) == GetName(3) && GetName(3) == GetName(6) && GetName(0) != "bad")
+        {
+            return 1;
+        }
+        else if (GetName(1) == GetName(4) && GetName(4) == GetName(7) && GetName(1) != "bad")
+        {
+            return 1;
+        }
+        else if (GetName(2) == GetName(5) && GetName(5) == GetName(8) && GetName(2) != "bad")
+        {
+            return 1;
+        }
+        else if (GetName(0) == GetName(4) && GetName(4) == GetName(8) && GetName(0) != "bad")
+        {
+            return 1;
+        }
+        else if (GetName(2) == GetName(4) && GetName(4) == GetName(6) && GetName(2) != "bad")
+        {
+            return 1;
+        }
+        return 0;
+    }
+
+    [Server]
+    private string GetName(int index)
+    {
+        if (boardMatrix[index] != null)
+        {
+            return boardMatrix[index].name;
+        }
+        return "bad";
+    }
 
     
 }

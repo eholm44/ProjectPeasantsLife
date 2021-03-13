@@ -1,14 +1,15 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-public class AutoMove : MonoBehaviour
+public class FairyMove : MonoBehaviour
 {
     public GameObject target = null;
     [SerializeField] private NavMeshAgent agent = null;
 
+
     void Start()
     {
-        target.gameObject.transform.parent = null;
+        gameObject.transform.parent = null;
     }
     void Update()
     {
