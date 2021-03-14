@@ -8,18 +8,30 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Tree_bark1
-  m_Shader: {fileID: 4800000, guid: 933532a4fcc9baf4fa0491de14d08ed7, type: 3}
-  m_ShaderKeywords: 
+  m_Shader: {fileID: -6465566751694194690, guid: b01a5c5354387d44bb1632ebedf1e769, type: 3}
+  m_ShaderKeywords: BOOLEAN_23373248EDED43D7A25541ED930AB045_ON BOOLEAN_2611D2A0A4FF4389A1E5E0CC5E4DB97F_ON
+    BOOLEAN_70F71370EEA046F6ABCE96AEBF567B37_ON BOOLEAN_E24928159AFC42DAA38E06166E69DBFC_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 2000
-  stringTagMap:
-    RenderType: Opaque
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
   disabledShaderPasses: []
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - Texture2D_13a2b0d53ffa403ba9bdc127b1630164:
+        m_Texture: {fileID: 2800000, guid: 8c00b22648d9f3b4ab7eb8a3e41d57a9, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - Texture2D_1beaaaa3e1fa485f87d25174334d4162:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - Texture2D_4f8fff17ee3844e688270ac1df7f3a68:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _BaseMap:
         m_Texture: {fileID: 2800000, guid: 8c00b22648d9f3b4ab7eb8a3e41d57a9, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -81,6 +93,16 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
+    - BOOLEAN_17C2FFA985DB408BB2E820BEED086ABE: 0
+    - BOOLEAN_23373248EDED43D7A25541ED930AB045: 1
+    - BOOLEAN_2611D2A0A4FF4389A1E5E0CC5E4DB97F: 1
+    - BOOLEAN_70F71370EEA046F6ABCE96AEBF567B37: 1
+    - BOOLEAN_E24928159AFC42DAA38E06166E69DBFC: 1
+    - Vector1_36997f74001c40ec9b74fb059a57aeb9: 0
+    - Vector1_6830bbd731c3461c8161f5ae7567604b: 0
+    - Vector1_8d8d1a1db3514ca385cf0eebb3827a97: 0.5
+    - Vector1_dd3acf33079d468ab6ea9970119fadaf: 0
+    - Vector1_fdfb6663c6524b55a8930a058e0fea0c: 0
     - _AO: 0
     - _AlphaClip: 0
     - _BaseLight: 1
@@ -114,6 +136,10 @@ Material:
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
+    - Color_3318da4623654862b5e54c930fecde7a: {r: 0.75471693, g: 0.75471693, b: 0.75471693, a: 0.1764706}
+    - Color_8467a09e36df4d63a49e5c45df352054: {r: 1, g: 1, b: 1, a: 0}
+    - Vector2_5888b8faeaa34ee59023a03835df89ba: {r: 0, g: 0, b: 0, a: 0}
+    - Vector2_7c7509d446bf4b4eb7f4e48590d6553c: {r: 1, g: 1, b: 0, a: 0}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}

@@ -34,7 +34,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BumpMap:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 47904388512f50c40b25b2f6a6b898a9, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DetailAlbedoMap:
@@ -121,7 +121,7 @@ Material:
     - BOOLEAN_E24928159AFC42DAA38E06166E69DBFC: 1
     - Vector1_36997f74001c40ec9b74fb059a57aeb9: 0
     - Vector1_6830bbd731c3461c8161f5ae7567604b: 0
-    - Vector1_8d8d1a1db3514ca385cf0eebb3827a97: 0
+    - Vector1_8d8d1a1db3514ca385cf0eebb3827a97: 0.5
     - Vector1_dd3acf33079d468ab6ea9970119fadaf: 0
     - Vector1_fdfb6663c6524b55a8930a058e0fea0c: 0
     - WindSpeed: 0.3
