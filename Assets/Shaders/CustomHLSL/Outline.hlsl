@@ -1,10 +1,4 @@
-﻿// This code is an adaptation of the open-source work by Alexander Ameye
-// From a tutorial originally posted here:
-// https://alexanderameye.github.io/outlineshader
-// Code also available on his Gist account
-// https://gist.github.com/AlexanderAmeye
-
-TEXTURE2D(_CameraDepthTexture);
+﻿TEXTURE2D(_CameraDepthTexture);
 SAMPLER(sampler_CameraDepthTexture);
 float4 _CameraDepthTexture_TexelSize;
 

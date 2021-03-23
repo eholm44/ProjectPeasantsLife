@@ -89,19 +89,17 @@ public class TicTacToe : MiniGame
             boardMatrix[8] = xInstance;
         }
 
-        //for (int i = 0; i < 3; i++)
-        //{
-        //    for (int j = 0; j < 3; j++)
-        //    {
-        //        Debug.Log(i + ", " + j + ": " + boardMatrix[i,j]);
-        //    }
-        //}
-
         NetworkServer.Spawn(xInstance);
 
-        if (CheckForWin() == 1)
+        int win = CheckForWin();
+
+        if (win == 1)
         {
             Debug.Log("Win");
+        }
+        else if (win == -1)
+        {
+            Debug.Log("Tie");
         }
         else
         {
@@ -146,7 +144,8 @@ public class TicTacToe : MiniGame
     [Server]
     public override void ClearBoard()
     {
-        foreach(GameObject piece in myDict.Values)
+
+        foreach(GameObject piece in boardMatrix)
         {
             GameObject.Destroy(piece);
         }

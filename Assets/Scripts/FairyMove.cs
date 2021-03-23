@@ -6,7 +6,6 @@ public class FairyMove : MonoBehaviour
     public GameObject target = null;
     [SerializeField] private NavMeshAgent agent = null;
 
-
     void Start()
     {
         gameObject.transform.parent = null;
@@ -19,4 +18,5 @@ public class FairyMove : MonoBehaviour
         //}
         agent.SetDestination(target.transform.position);
     }
+
 }

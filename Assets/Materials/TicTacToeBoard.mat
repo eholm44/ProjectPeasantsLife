@@ -109,10 +109,10 @@ Material:
     - BOOLEAN_70F71370EEA046F6ABCE96AEBF567B37: 1
     - BOOLEAN_E24928159AFC42DAA38E06166E69DBFC: 1
     - Vector1_36997f74001c40ec9b74fb059a57aeb9: 0
-    - Vector1_6830bbd731c3461c8161f5ae7567604b: 0
+    - Vector1_6830bbd731c3461c8161f5ae7567604b: 3
     - Vector1_8d8d1a1db3514ca385cf0eebb3827a97: 0.5
-    - Vector1_dd3acf33079d468ab6ea9970119fadaf: 0
-    - Vector1_fdfb6663c6524b55a8930a058e0fea0c: 0
+    - Vector1_dd3acf33079d468ab6ea9970119fadaf: 0.5
+    - Vector1_fdfb6663c6524b55a8930a058e0fea0c: 0.5
     - _AlphaClip: 0
     - _Blend: 0
     - _BumpScale: 1

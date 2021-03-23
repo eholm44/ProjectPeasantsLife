@@ -6,7 +6,6 @@ public class Floater : MonoBehaviour {
     // User Inputs
     public float amplitude = 0.5f;
     public float frequency = 1f;
- 
     // Position Storage Variables
     Vector3 posOffset = new Vector3 ();
     Vector3 tempPos = new Vector3 ();
@@ -26,4 +25,5 @@ public class Floater : MonoBehaviour {
  
         transform.position = tempPos;
     }
+
 }

@@ -8,7 +8,9 @@ void MainLight_float(float3 WorldPos, out float3 Direction, out float3 Color, ou
     Color = 1;
     ShadowAtten = 1;
 #ifndef SHADERGRAPH_PREVIEW
-    Light mainLight = GetMainLight();
+
+    float4 shadowCoord = float4(0, 0, 0, 0);
+    Light mainLight = GetMainLight(shadowCoord);
     Direction = mainLight.direction;
     Color = mainLight.color;
 
@@ -25,20 +27,20 @@ void MainLight_float(float3 WorldPos, out float3 Direction, out float3 Color, ou
 }
 
 
-void DirectSpecular_float(float Smoothness, float3 Direction, float3 WorldNormal, float3 WorldView, out float3 Out)
+void DirectSpecular_float(float Smoothness, float3 Direction, float3 WorldNorm, float3 WorldView, out float3 Out)
 {
     float4 White = 1;
     Out = 0;
 
 #ifndef SHADERGRAPH_PREVIEW
     Smoothness = exp2(10 * Smoothness + 1);
-    WorldNormal = normalize(WorldNormal);
+    WorldNorm = normalize(WorldNorm);
     WorldView = SafeNormalize(WorldView);
-    Out = LightingSpecular(White, Direction, WorldNormal, WorldView, White, Smoothness);
+    Out = LightingSpecular(White, Direction, WorldNorm, WorldView, White, Smoothness);
 #endif
 }
 
-void AdditionalLights_float(float Smoothness, float3 WorldPosition, float3 WorldNormal, float3 WorldView, out float3 Diffuse, out float3 Specular)
+void AdditionalLights_float(float Smoothness, float3 WorldPos, float3 WorldNorm, float3 WorldView, out float3 Diffuse, out float3 Specular)
 {
     float3 diffuseColor = 0;
     float3 specularColor = 0;
@@ -46,15 +48,15 @@ void AdditionalLights_float(float Smoothness, float3 WorldPosition, float3 World
 
 #ifndef SHADERGRAPH_PREVIEW
     Smoothness = exp2(10 * Smoothness + 1);
-    WorldNormal = normalize(WorldNormal);
+    WorldNorm = normalize(WorldNorm);
     WorldView = SafeNormalize(WorldView);
     int pixelLightCount = GetAdditionalLightsCount();
     for (int i = 0; i < pixelLightCount; ++i)
     {
-        Light light = GetAdditionalLight(i, WorldPosition);
+        Light light = GetAdditionalLight(i, WorldPos);
         half3 attenuatedLightColor = light.color * (light.distanceAttenuation * light.shadowAttenuation);
-        diffuseColor += LightingLambert(attenuatedLightColor, light.direction, WorldNormal);
-        specularColor += LightingSpecular(attenuatedLightColor, light.direction, WorldNormal, WorldView, White, Smoothness);
+        diffuseColor += LightingLambert(attenuatedLightColor, light.direction, WorldNorm);
+        specularColor += LightingSpecular(attenuatedLightColor, light.direction, WorldNorm, WorldView, White, Smoothness);
     }
 #endif
 
